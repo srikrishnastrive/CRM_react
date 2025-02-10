@@ -1,4 +1,69 @@
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { signup } from "../../Redux/slices/AuthSlice";
+
 function Signup() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [signupDetails, setSignUpDetails] = useState({
+        email: "",
+        password: "",
+        name: "",
+        userType: "",
+        userStatus: "",
+        clientName: ""
+    });
+
+    function handleInputChange(e) {
+        const {name, value} = e.target;
+        setSignUpDetails({
+            ...signupDetails,
+            [name]: value
+        });
+    }
+
+    function handleUserType(e) {
+        const userTypeSelected = e.target.textContent;
+        setSignUpDetails({
+            ...signupDetails, 
+            userType: userTypeSelected,
+            userStatus: (userTypeSelected === "customer") ? "approved" : "suspended"
+        });
+        const dropDown = document.getElementById("userTypeDropDown");
+        dropDown.open = !dropDown.open;
+    }
+
+    function resetSignupState() {
+        setSignUpDetails({
+            email: "",
+            password: "",
+            name: "",
+            userType: "",
+            userStatus: "",
+            clientName: ""
+        });
+    }
+
+    async function onSubmit() {
+        if(!signupDetails.email || 
+            !signupDetails.password || 
+            !signupDetails.userStatus || 
+            !signupDetails.userType || 
+            !signupDetails.name || 
+            !signupDetails.clientName) return;
+        const response = await dispatch(signup(signupDetails));
+        if(response.payload) {
+            // toast.success("Successfully signed up");
+            navigate("/login");
+        }
+        else {
+            // toast.error("Something went wrong, please try again !");
+            resetSignupState();
+        } 
+        
+    }
     return (
        <div className="flex justify-center items-center h-[90vh]">
             <div className="card bg-primary text-primary-content w-96">
@@ -7,38 +72,67 @@ function Signup() {
                     <h2 className="card-title text-4xl text-white ">Login</h2>
                 </div>
                 <div className="w-full">
-                    <input
-                        type="text"
-                        autoComplete="one-time-code"
-                        placeholder="User id "
-                        className="input input-bordered input-primary w-full max-w-xs text-white" />
-                </div>
-                <div className="w-full">
-                    <input
-                        type="email"
-                        autoComplete="one-time-code"
-                        placeholder="Email"
-                        className="input input-bordered input-primary w-full max-w-xs text-white" />
-                </div>
-                <div className="w-full">
-                    <input
-                        type="password"
-                        autoComplete="one-time-code"
-                        placeholder="Password"
-                        className="input input-bordered input-primary w-full max-w-xs text-white " /> 
-                </div>
-               
-                <details className="dropdown mb-4 w-full">
-                    <summary className="btn">User type</summary>
-                    <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow text-white">
-                        <li><a>Customer 1</a></li>
-                        <li><a>Engineer</a></li>
-                    </ul>
+                        <input 
+                            onChange={handleInputChange}
+                            name="email"
+                            autoComplete="one-time-code" 
+                            type="text" 
+                            placeholder="email ..."
+                            value={signupDetails.email}
+                            className="input text-white input-bordered input-primary w-full max-w-xs" 
+                        />
+                    </div>
+                    <div className="w-full">
+                        <input 
+                            onChange={handleInputChange}
+                            name="password"
+                            autoComplete="one-time-code"  
+                            type="password" 
+                            placeholder="password" 
+                            value={signupDetails.password}
+                            className="input text-white input-bordered input-primary w-full max-w-xs" 
+                        />
+                    </div>
+                    <div className="w-full">
+                        <input 
+                            onChange={handleInputChange}
+                            name="name"
+                            autoComplete="one-time-code"  
+                            type="text" 
+                            placeholder="name" 
+                            value={signupDetails.name}
+                            className="input text-white input-bordered input-primary w-full max-w-xs" 
+                        />
+                    </div>
+                    <details className="dropdown mb-4 w-full" id="userTypeDropDown">
+                        <summary className="btn">{(!signupDetails.userType) ? "User Type" : signupDetails.userType}</summary>
+                        <ul onClick={handleUserType} className="p-2 shadow menu dropdown-content z-[1] bg-base-100 text-white rounded-box w-52">
+                            <li><a>customer</a></li>
+                            <li><a>engineer</a></li>
+                            <li><a>admin</a></li>
+                        </ul>
                     </details>
+                    
+                    <div className="w-full">
+                        <input 
+                            onChange={handleInputChange}
+                            name="clientName"
+                            autoComplete="one-time-code"  
+                            type="text" 
+                            placeholder="client name" 
+                            value={signupDetails.clientName}
+                            className="input text-white input-bordered input-primary w-full max-w-xs" 
+                        />
+                    </div>
+                    
+               
                
                 <div className="card-actions w-full mt-4">
-                <button className="btn btn-warning w-full font-bold hover:bg-accent-focus">Submit</button>
+                <button onClick={onSubmit} className="btn btn-warning w-full font-bold hover:bg-accent-focus">Submit</button>
                 </div>
+                <p className="text-l text-white">
+                        Already have an account ? <Link className="text-yellow-200 font-semibold hover:text-white" to="/login">Login Instead</Link>
+                    </p>
             </div>
             </div>
        </div>
