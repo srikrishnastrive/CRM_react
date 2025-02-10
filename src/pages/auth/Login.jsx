@@ -1,4 +1,33 @@
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import {login} from '../../Redux/slices/AuthSlice';
+import { useNavigate } from "react-router-dom";
+
 function Login() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [loginDetails,setLoginDetails] = useState({
+        email:'',
+        password:''
+    });
+
+    
+
+    async function onSubmit() {
+        if (!loginDetails.email || !loginDetails.password) return;
+    
+        try {
+            const response = await dispatch(login(loginDetails)).unwrap(); // ✅ Wait for the response
+            console.log(response.data.message);
+    
+            if (response.data.message === 'user validated') {
+                navigate('/');
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
+    }
+    
     return (
        <div className="flex justify-center items-center h-[90vh]">
             <div className="card bg-primary text-primary-content w-96">
@@ -10,7 +39,9 @@ function Login() {
                     <input
                         type="email"
                         autoComplete="one-time-code"
-                        placeholder="User id "
+                        placeholder="email "
+                        value={loginDetails.email}
+                        onChange={(e)=> setLoginDetails((prev)=> ({...prev,email:e.target.value}))}
                         className="input input-bordered input-primary w-full max-w-xs text-white" />
                 </div>
                 <div className="w-full">
@@ -18,10 +49,12 @@ function Login() {
                         type="password"
                         autoComplete="one-time-code"
                         placeholder="Password"
+                        value={loginDetails.password}
+                        onChange={(e)=> setLoginDetails((prev)=> ({...prev,password:e.target.value}))}
                         className="input input-bordered input-primary w-full max-w-xs text-white " /> 
                 </div>
                 <div className="card-actions w-full mt-4">
-                <button className="btn btn-warning w-full font-bold hover:bg-accent-focus">Submit</button>
+                <button onClick={onSubmit} className="btn btn-warning w-full font-bold hover:bg-accent-focus">Submit</button>
                 </div>
             </div>
             </div>
