@@ -1,7 +1,19 @@
 import { BsFillMenuButtonWideFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../Redux/slices/AuthSlice";
 
 
 function HomeLayout({children}){
+    const navigate = useNavigate();
+    const authState = useSelector((state)=> state.auth);
+    const dispatch = useDispatch();
+
+    async function onLogout(){
+        dispatch(logout());
+        navigate('/login');
+    }
+
     return (
         <div className="min-h-[90vh]">
             <div className="drawer absolute left-0 right-0 cursor-pointer mt-4 ml-4">
@@ -15,10 +27,25 @@ function HomeLayout({children}){
                         <li><a>View All Tickets</a></li>
                         <li><a>Dashboard</a></li>
                         <li className="absolute bottom-8 w-3/4">
-                            <div className="w-full flex justify-center items-center "  >
-                                <button className="btn-primary px-1 py-1 rounded-md font-semibold w-full">Login</button>
-                                <button className="btn-secondary px-1 py-1 rounded-md font-semibold w-full">Signup</button>
-                            </div>
+                        <div className="w-full flex justify-center items-center "  >
+                        {
+                            !authState.isLoggedIn ? (
+                                <>
+                                      <Link className="btn-primary px-1 py-1 rounded-md font-semibold w-full text-center" to='/login'>Login</Link>
+                                      <Link className="btn-secondary px-1 py-1 rounded-md font-semibold w-full text-center" to='/signup'>Signup</Link>
+                                </>
+                            ):
+                                (
+                                    <>
+                                        <button onClick={onLogout} className="btn-primary px-1 py-1 rounded-md font-semibold w-full text-center" >Logout</button>
+                                        <Link className="btn-secondary px-1 py-1 rounded-md font-semibold w-full text-center" >Profile</Link>
+                                    </>
+                                    
+                                )
+                        }
+                            
+                              
+                    </div>
                         </li>
                         </ul>
                 </div>

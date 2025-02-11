@@ -14,12 +14,13 @@ const initialState = {
 
 export const login = createAsyncThunk('auth/login',async (data)=>{
     try {
-        const response = await axios.post('http://localhost:8000/crmapp/api/v1/auth/signin',data);
+        const response =  axios.post('http://localhost:8000/crmapp/api/v1/auth/signin',data);
         toast.promise(response, {
             loading: 'Submitting form',
             success: 'Successfully signin',
             error: 'Something went wrong, try again'
         });
+        return await response;
     } catch (error) {
         console.log(error);
     }
@@ -42,7 +43,15 @@ export const signup = createAsyncThunk('/auth/signup', async (data) => {
 const authSlice = createSlice({
     name:'auth',
     initialState,
-    reducers : {},
+    reducers : {
+        logout : (state) => {
+            localStorage.clear(),
+            state.role = "",
+            state.data = undefined,
+            state.isLoggedIn = false,
+            state.token =  "";
+        }
+    },
     extraReducers:(builder)=>{
         builder.addCase(login.fulfilled,(state,action)=>{
             if (!action.payload) return;
@@ -59,4 +68,5 @@ const authSlice = createSlice({
     }
 });
 
+export const  {logout} =  authSlice.actions;
 export default authSlice.reducer;
