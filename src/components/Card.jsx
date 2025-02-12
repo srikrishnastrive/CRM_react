@@ -19,7 +19,7 @@ function Card({ children, fontColor="text-white", borderColor="border-error", di
                 <div className={`text-7xl ${fontColor}`}>
                     {quantity}
                 </div>
-                <div className={`radial-progress ${fontColor}`} style={{"--value": status*100}}>{statusPercent.toString().substring(0, 2)}%</div>
+                <div className={`radial-progress ${fontColor}`} style={{"--value": status*100}}>{Math.floor(status*100)}%</div>
             </div>
 
         </div>

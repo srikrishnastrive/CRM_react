@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../../config/axiosInstance";
 import axios from "axios";
-import toast from "react-hot-toast";
+import {toast} from "react-hot-toast";
 
 
 const initialState = {
