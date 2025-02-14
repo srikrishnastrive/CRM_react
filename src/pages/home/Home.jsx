@@ -1,28 +1,23 @@
-import { useEffect } from "react";
+
 import Card from "../../components/Card";
 import HomeLayout from "../../layouts/HomeLayout";
-import { useDispatch, useSelector } from "react-redux";
-import {getAllTicketsforTheUser} from '../../Redux/slices/TicketSlice';
 import { MdCancel, MdOutlineDoneAll, MdPending } from "react-icons/md";
 import { TbProgressBolt } from "react-icons/tb";
 import { BsFillPencilFill } from "react-icons/bs";
+import useTickets from "../../hooks/useTickets";
+import { ArcElement,Chart as ChartJs,Legend,Title,Tooltip } from "chart.js";
+import { Bar, Line,Pie } from 'react-chartjs-2';
+import useCharts from "../../hooks/useCharts";
+
+ChartJs.register(ArcElement,Legend,Title,Tooltip);
 
 export default function Home(){
 
-    const dispatch = useDispatch();
-
-    const ticketsState = useSelector((state)=> state.tickets);
-    const authState = useSelector((state)=> state.auth);
-   
-    async function loadTickets() {
-        const response = await dispatch(getAllTicketsforTheUser());
-        console.log('called once');
-    }
-    useEffect(()=>{
-        loadTickets();
-    },[authState.token]);
-
-    console.log(ticketsState.ticketDistribution.open /ticketsState.ticketsList.length );
+    
+    const [ticketsState] = useTickets();
+    const [pieChartData, lineChartData, barChartData] = useCharts();
+    
+    
 
 
     return(
@@ -32,7 +27,7 @@ export default function Home(){
                 <div className='mt-10 flex flex-row justify-center items-center gap-5 flex-wrap'>
                 <Card 
                     titleText='Open' 
-                    status={ticketsState.ticketDistribution.open / ticketsState.ticketsList.length} 
+                    status={ticketsState.ticketDistribution.open / ticketsState.downloadedTickets.length} 
                     quantity={ticketsState.ticketDistribution.open}
                     background='bg-yellow-300' 
                     borderColor='border-green-300' 
@@ -43,7 +38,7 @@ export default function Home(){
                 </Card>
                 <Card 
                     titleText='In Progress' 
-                    status={ticketsState.ticketDistribution.inProgress / ticketsState.ticketsList.length} 
+                    status={ticketsState.ticketDistribution.inProgress /ticketsState.downloadedTickets.length} 
                     quantity={ticketsState.ticketDistribution.inProgress}
                     background='bg-orange-300' 
                     borderColor='border-red-300' 
@@ -54,7 +49,7 @@ export default function Home(){
                 </Card>
                 <Card 
                     titleText='Resolved' 
-                    status={ticketsState.ticketDistribution.resolved / ticketsState.ticketsList.length} 
+                    status={ticketsState.ticketDistribution.resolved / ticketsState.downloadedTickets.length} 
                     quantity={ticketsState.ticketDistribution.resolved}
                     background='bg-purple-300' 
                     borderColor='border-blue-700' 
@@ -65,7 +60,7 @@ export default function Home(){
                 </Card>
                 <Card 
                     titleText='On Hold' 
-                    status={ticketsState.ticketDistribution.onHold / ticketsState.ticketsList.length} 
+                    status={ticketsState.ticketDistribution.onHold / ticketsState.downloadedTickets.length} 
                     quantity={ticketsState.ticketDistribution.onHold}
                     background='bg-gray-300' 
                     borderColor='border-gray-800' 
@@ -76,7 +71,7 @@ export default function Home(){
                 </Card>
                 <Card 
                     titleText='Cancelled' 
-                    status={ticketsState.ticketDistribution.cancelled / ticketsState.ticketsList.length} 
+                    status={ticketsState.ticketDistribution.cancelled / ticketsState.downloadedTickets.length} 
                     quantity={ticketsState.ticketDistribution.cancelled}
                     background='bg-blue-300' 
                     borderColor='border-violet-300' 
@@ -87,6 +82,24 @@ export default function Home(){
                 </Card>
                 </div>
             )}
+            <div className="mt-10 flex justify-center items-center gap-10">
+                <div className="w-80 h-80 ">
+                    <Pie data={pieChartData}/>
+                </div>
+                
+            </div>
+            <div className="mt-10 mb-10 flex justify-center items-center gap-10">
+
+                <div className="w-[50rem] bg-[wheat]">
+                    <Line data={lineChartData}/>
+                </div>
+            </div>
+            <div className="mt-10 mb-10 flex justify-center items-center gap-10">
+
+                <div className="w-[50rem] bg-[wheat]">
+                    <Bar data={barChartData}/>
+                </div>
+            </div>
             </HomeLayout>
             
         </>

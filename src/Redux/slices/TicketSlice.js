@@ -5,6 +5,7 @@ import {toast} from "react-hot-toast";
 
 
 const initialState = {
+    downloadedTickets : [],
     ticketsList : [],
     ticketDistribution : {
         open : 0,
@@ -15,7 +16,7 @@ const initialState = {
     }
 }
 
-export const getAllTicketsforTheUser = createAsyncThunk('tickets/getAllTicketsforTheUser',async()=>{
+export const getAllTicketsforTheUser = createAsyncThunk('tickets/getAllTicketsforTheUser',async(status)=>{
     try {
         const response = axios.get('http://localhost:8000/crmapp/api/v1/getMyAssignedTickets',{
             headers:{
@@ -28,6 +29,7 @@ export const getAllTicketsforTheUser = createAsyncThunk('tickets/getAllTicketsfo
             error:'Something went wrong',
         });
         return await response;
+       
     } catch (error) {
         console.log(error);
     }
@@ -38,11 +40,22 @@ export const getAllTicketsforTheUser = createAsyncThunk('tickets/getAllTicketsfo
 const ticketSlice = createSlice({
     name : 'tickets',
     initialState,
-    reducers:{},
+    reducers:{
+        filterTickets : (state,action) => {
+            console.log(action.payload);
+            let status = action.payload.status.toLowerCase();
+            if(status == "in progress") status = "inProgress";
+            if(status == "on hold") status = "onHold";
+            state.ticketsList = state.downloadedTickets.filter(
+                (ticket) => ticket.status === status
+            );
+        }
+    },
     extraReducers : (builder) =>{
         builder.addCase(getAllTicketsforTheUser.fulfilled,(state,action)=>{
             if (!action.payload?.data) return;
             state.ticketsList = action?.payload?.data?.result;
+            state.downloadedTickets = action?.payload?.data?.result;
             const tickets = action?.payload?.data?.result;
             state.ticketDistribution = {
                 open : 0,
@@ -58,5 +71,7 @@ const ticketSlice = createSlice({
         })
     }
 });
+
+export const {filterTickets} = ticketSlice.actions;
 
 export default ticketSlice.reducer;
