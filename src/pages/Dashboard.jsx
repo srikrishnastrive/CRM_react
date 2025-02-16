@@ -7,6 +7,7 @@ import { usePDF } from "react-to-pdf";
 import useTickets from "../hooks/useTickets";
 import HomeLayout from '../layouts/HomeLayout';
 import { useSearchParams } from 'react-router-dom';
+import TicketDetailsModal from '../components/TicketDetailsModal';
 
 const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
 
@@ -108,6 +109,7 @@ function Dashboard() {
                             customStyles={customStyles}
                         />
                     }
+                    <TicketDetailsModal ticket={selectedTicket}/>
                     
                 </div>
             </div>  
