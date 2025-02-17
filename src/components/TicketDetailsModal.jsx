@@ -17,7 +17,8 @@ function TicketDetailsModal({ticket}){
 
     async function handleFormSubmit(){
        const response = await dispatch(updateTicket(currentTicket));
-       console.log(response);
+       const modal = document.getElementById('ticket_modal');
+       modal.close();
     }
     
     return (

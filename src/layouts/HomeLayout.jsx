@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../Redux/slices/AuthSlice";
 import { useEffect } from "react";
+import useTickets from "../hooks/useTickets";
 
 
 function HomeLayout({children}){
     const navigate = useNavigate();
+    useTickets();
     const authState = useSelector((state)=> state.auth);
     const dispatch = useDispatch();
+    
 
     async function onLogout(){
         dispatch(logout());
@@ -17,6 +20,7 @@ function HomeLayout({children}){
 
     useEffect(()=>{
         if (!authState.isLoggedIn) navigate('/login');
+        
     },[]);
 
     return (
@@ -33,6 +37,7 @@ function HomeLayout({children}){
                         <li><Link to="/">Home</Link></li>
 
                         <li><Link to="/dashboard">Dashboard</Link></li>
+                        {authState.isLoggedIn  &&  <li><Link to="/ticket/create">Create Ticket</Link></li>}
                         {authState.role === 'admin' &&  <li><Link to="/users">All Users</Link></li>}
 
                         <li className="absolute bottom-8 w-3/4">
